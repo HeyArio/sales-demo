@@ -1,0 +1,8 @@
+# secrets — NEVER commit
+.env
+
+# build artifacts
+index.json
+venv/
+__pycache__/
+*.pyc

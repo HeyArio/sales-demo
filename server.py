@@ -21,9 +21,24 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from mistralai import Mistral
 
+# Load .env (a key=value file next to this script) so MISTRAL_API_KEY is
+# available no matter how the process is launched (pm2, systemd, bare uvicorn).
+def _load_dotenv():
+    here = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(here, ".env")
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+_load_dotenv()
+
 API_KEY = os.environ.get("MISTRAL_API_KEY")
 if not API_KEY:
-    raise SystemExit("Set MISTRAL_API_KEY first.")
+    raise SystemExit("Set MISTRAL_API_KEY first (in a .env file or the shell).")
 
 EMBED_MODEL = "mistral-embed"
 CHAT_MODEL  = "mistral-small-latest"   # free-tier friendly; bump to mistral-large-latest if you want

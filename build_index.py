@@ -10,9 +10,22 @@ Usage:
 import os, sys, json, time
 from mistralai import Mistral
 
+def _load_dotenv():
+    here = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(here, ".env")
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+_load_dotenv()
+
 API_KEY = os.environ.get("MISTRAL_API_KEY")
 if not API_KEY:
-    sys.exit("Set MISTRAL_API_KEY first:  export MISTRAL_API_KEY=...")
+    sys.exit("Set MISTRAL_API_KEY first (in a .env file or:  export MISTRAL_API_KEY=...)")
 
 EMBED_MODEL = "mistral-embed"
 client = Mistral(api_key=API_KEY)
