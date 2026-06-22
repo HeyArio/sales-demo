@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>دستیار هوشمند دورهٔ فروش</title>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#171a23; --panel2:#1f2430; --line:#2a3040;
+    --text:#e8eaf0; --muted:#9aa3b2; --accent:#6c8cff; --accent2:#46d39a;
+    --bad:#ff6b6b; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Vazirmatn,"Segoe UI",Tahoma,sans-serif;
+    background:radial-gradient(1200px 600px at 80% -10%,#1b2336 0%,var(--bg) 55%);
+    color:var(--text);min-height:100vh}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 60px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .logo{width:40px;height:40px;border-radius:11px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:grid;place-items:center;font-weight:800;color:#0b0d12}
+  h1{font-size:20px;margin:0}
+  .sub{color:var(--muted);font-size:13px;margin:2px 0 22px}
+  .tabs{display:flex;gap:8px;margin-bottom:18px}
+  .tab{flex:1;padding:11px;border:1px solid var(--line);background:var(--panel);
+    border-radius:11px;cursor:pointer;text-align:center;font-weight:600;
+    color:var(--muted);transition:.15s}
+  .tab.active{color:var(--text);border-color:var(--accent);
+    background:linear-gradient(180deg,var(--panel2),var(--panel))}
+  .card{background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px}
+  /* chat */
+  .chat{display:flex;flex-direction:column;height:62vh}
+  .msgs{flex:1;overflow-y:auto;padding:6px 4px;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:86%;padding:11px 14px;border-radius:13px;line-height:1.85;font-size:14.5px;white-space:pre-wrap}
+  .me{align-self:flex-start;background:var(--accent);color:#0b0d12;border-bottom-right-radius:4px}
+  .bot{align-self:flex-end;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .sources{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11.5px;color:var(--muted);background:#11141c;border:1px solid var(--line);
+    padding:3px 9px;border-radius:20px}
+  .chip b{color:var(--accent2)}
+  .composer{display:flex;gap:8px;margin-top:12px}
+  input,select{font-family:inherit;font-size:14px;color:var(--text);
+    background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:12px}
+  .composer input{flex:1}
+  button.send,button.primary{font-family:inherit;font-weight:700;cursor:pointer;
+    border:none;border-radius:11px;padding:12px 18px;
+    background:linear-gradient(135deg,var(--accent),#8aa2ff);color:#0b0d12}
+  button:disabled{opacity:.5;cursor:default}
+  .hint{color:var(--muted);font-size:12.5px;margin-top:10px}
+  .examples{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .ex{font-size:12.5px;cursor:pointer;color:var(--accent);background:#11141c;
+    border:1px dashed var(--line);padding:6px 11px;border-radius:20px}
+  /* quiz */
+  .qrow{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .q{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .q h3{font-size:15px;margin:0 0 11px;line-height:1.8}
+  .opt{display:block;padding:11px 13px;margin:7px 0;border:1px solid var(--line);
+    border-radius:11px;cursor:pointer;font-size:14px;transition:.12s}
+  .opt:hover{border-color:var(--accent)}
+  .opt.sel{border-color:var(--accent);background:rgba(108,140,255,.12)}
+  .opt.right{border-color:var(--accent2);background:rgba(70,211,154,.14)}
+  .opt.wrong{border-color:var(--bad);background:rgba(255,107,107,.12)}
+  .expl{font-size:12.5px;color:var(--muted);margin-top:8px;padding:8px 11px;
+    background:#11141c;border-radius:9px;display:none}
+  .expl.show{display:block}
+  .score{font-size:18px;font-weight:800;text-align:center;padding:14px;
+    border-radius:12px;background:var(--panel2);border:1px solid var(--line);margin-top:6px}
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);
+    border-top-color:#0b0d12;border-radius:50%;display:inline-block;animation:s .7s linear infinite}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .center{display:grid;place-items:center;height:40vh;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">ن</div>
+    <div>
+      <h1>دستیار هوشمند دورهٔ فروش</h1>
+      <div class="sub">پرسش‌وپاسخ مبتنی بر محتوای دوره + آزمون خودکار · نمونهٔ نمایشی</div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="chat" onclick="switchTab('chat')">💬 چت‌بات دوره</div>
+    <div class="tab" data-tab="quiz" onclick="switchTab('quiz')">📝 آزمون</div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat" class="card">
+    <div class="chat">
+      <div class="msgs" id="msgs">
+        <div class="msg bot">سلام 👋 من بر اساس محتوای این دوره به سؤال‌هاتون جواب می‌دم. هر چیزی در مورد بازآفرینی محصول، قیمت‌گذاری یا کمپین بپرسید.</div>
+      </div>
+      <div class="composer">
+        <input id="qbox" placeholder="سؤالتون رو بنویسید…" onkeydown="if(event.key==='Enter')ask()" />
+        <button class="send" id="sendBtn" onclick="ask()">ارسال</button>
+      </div>
+      <div class="examples" id="examples">
+        <span class="ex" onclick="fill(this)">سه مرحلهٔ بازآفرینی محصول چیه؟</span>
+        <span class="ex" onclick="fill(this)">دورچین محصول یعنی چی؟</span>
+        <span class="ex" onclick="fill(this)">چطور قیمت محصول رو تعیین کنم؟</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="card" style="display:none">
+    <div class="qrow">
+      <label>تعداد سؤال:</label>
+      <select id="numq">
+        <option>3</option><option selected>4</option><option>5</option>
+      </select>
+      <button class="primary" id="genBtn" onclick="genQuiz()">ساخت آزمون</button>
+    </div>
+    <div id="quizBody">
+      <div class="center">برای شروع، روی «ساخت آزمون» بزنید.<br>سؤال‌ها به‌صورت زنده از محتوای دوره ساخته می‌شوند.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = location.origin;   // same server
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('active',e.dataset.tab===t));
+  document.getElementById('chat').style.display = t==='chat'?'block':'none';
+  document.getElementById('quiz').style.display = t==='quiz'?'block':'none';
+}
+function fill(el){ document.getElementById('qbox').value = el.textContent; ask(); }
+
+// ---------- CHAT ----------
+function addMsg(text, cls, sources){
+  const m = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg '+cls;
+  d.textContent = text;
+  if(sources && sources.length){
+    const s = document.createElement('div'); s.className='sources';
+    sources.forEach(src=>{
+      const c=document.createElement('span'); c.className='chip';
+      c.innerHTML = `منبع: <b>${src.timestamp_range}</b>`;
+      c.title = src.preview;
+      s.appendChild(c);
+    });
+    d.appendChild(s);
+  }
+  m.appendChild(d); m.scrollTop = m.scrollHeight;
+  return d;
+}
+async function ask(){
+  const box = document.getElementById('qbox');
+  const q = box.value.trim(); if(!q) return;
+  box.value='';
+  document.getElementById('examples').style.display='none';
+  addMsg(q,'me');
+  const btn=document.getElementById('sendBtn'); btn.disabled=true;
+  const loading = addMsg('در حال فکر کردن…','bot');
+  try{
+    const r = await fetch(API+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:q})});
+    const data = await r.json();
+    loading.remove();
+    addMsg(data.answer,'bot',data.sources);
+  }catch(e){
+    loading.remove();
+    addMsg('خطا در ارتباط با سرور. مطمئن شوید سرور اجرا شده است.','bot');
+  }
+  btn.disabled=false;
+}
+
+// ---------- QUIZ ----------
+let CURRENT_QUIZ=null, SELECTED={};
+async function genQuiz(){
+  const n = +document.getElementById('numq').value;
+  const body = document.getElementById('quizBody');
+  const btn = document.getElementById('genBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> در حال ساخت…';
+  body.innerHTML='<div class="center">سؤال‌ها در حال ساخته‌شدن از محتوای دوره…</div>';
+  try{
+    const r = await fetch(API+'/quiz',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({num_questions:n})});
+    CURRENT_QUIZ = await r.json();
+    SELECTED={};
+    renderQuiz(CURRENT_QUIZ);
+  }catch(e){
+    body.innerHTML='<div class="center">خطا در ساخت آزمون.</div>';
+  }
+  btn.disabled=false; btn.textContent='ساخت آزمون';
+}
+function renderQuiz(quiz){
+  const body=document.getElementById('quizBody');
+  body.innerHTML='';
+  quiz.questions.forEach((q,qi)=>{
+    const wrap=document.createElement('div'); wrap.className='q';
+    const h=document.createElement('h3'); h.textContent=(qi+1)+'. '+q.q; wrap.appendChild(h);
+    q.options.forEach((opt,oi)=>{
+      const o=document.createElement('div'); o.className='opt';
+      o.textContent=opt;
+      o.onclick=()=>{
+        SELECTED[qi]=oi;
+        [...wrap.querySelectorAll('.opt')].forEach(x=>x.classList.remove('sel'));
+        o.classList.add('sel');
+      };
+      wrap.appendChild(o);
+    });
+    const ex=document.createElement('div'); ex.className='expl'; ex.id='expl'+qi; wrap.appendChild(ex);
+    body.appendChild(wrap);
+  });
+  const b=document.createElement('button'); b.className='primary'; b.textContent='تصحیح آزمون';
+  b.style.width='100%'; b.onclick=submitQuiz; body.appendChild(b);
+}
+async function submitQuiz(){
+  const answers = CURRENT_QUIZ.questions.map((_,i)=> SELECTED[i] ?? -1);
+  const r = await fetch(API+'/quiz/grade',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({quiz_id:CURRENT_QUIZ.quiz_id, answers})});
+  const data = await r.json();
+  const qs=document.querySelectorAll('.q');
+  data.results.forEach(res=>{
+    const wrap=qs[res.index]; const opts=wrap.querySelectorAll('.opt');
+    opts.forEach(o=>o.style.pointerEvents='none');
+    const chosen=SELECTED[res.index];
+    if(chosen>=0 && !res.correct) opts[chosen].classList.add('wrong');
+    opts[res.answer_index].classList.add('right');
+    const ex=document.getElementById('expl'+res.index);
+    ex.textContent='💡 '+res.explanation; ex.classList.add('show');
+  });
+  const s=document.createElement('div'); s.className='score';
+  s.textContent=`امتیاز شما: ${data.score} از ${data.total}`;
+  document.getElementById('quizBody').appendChild(s);
+  s.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
